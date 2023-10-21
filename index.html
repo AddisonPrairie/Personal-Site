@@ -1,0 +1,158 @@
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+        <style>
+            body {
+                margin: 0px;
+                padding: 0px;
+                font-family: "Overpass Mono", monospace;
+                font-size: 13.5px;
+                display: flex;
+            }
+            .column {
+                width: 50%; height: 100%;
+            }
+            .left-column {
+                overflow-y: scroll;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .right-column {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .title {
+                text-align: center;
+                font-size: 20px;
+                margin: 10px 0px;
+            }
+            .text {
+                width: 90%;
+                max-width: 400px;
+            }
+            .table div {
+                text-align: center;
+            }
+            table, tr {
+                font-size: inherit;
+            }
+            td {
+                font-size: inherit;
+                padding: 1px 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="left-column column">
+            <div style="height: 100px;"></div>
+            <div class="title">Addison Prairie</div>
+            <div style="height: 50px;"></div>
+            <div class="text">
+                I am a student studying math and computer science at Stanford University. I am originally from Austin, Texas. My primary interests are pure math and computer graphics.
+            </div>
+            <div style="height: 50px;"></div>
+            <div class="table">
+                <div class="title">Writing</div>
+                <table>
+                    <tr>
+                        <td><a href="/writing/sdf002/">SDF Path Tracing 2</a></td>
+                        <td>Aug 2023</td>
+                    </tr>
+                    <tr>
+                        <td>Web.vox</td>
+                        <td>Aug 2023</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/writing/vox002/">WebGPU Voxel Fractals</a></td>
+                        <td>Jul 2023</td>
+                    </tr>
+                    <tr>
+                        <td><a href="/writing/wpt001/">WebGPU "Wavefront" Path Tracing</a></td>
+                        <td>Jun 2023</td>
+                    </tr>
+                    <tr>
+                        <td>pbr v.1</td>
+                        <td>Feb 2023</td>
+                    </tr>
+                    <tr>
+                        <td>WebGL Voxel Fractals</td>
+                        <td>Dec 2022</td>
+                    </tr>
+                    <tr>
+                        <td>SDF path tracing v.1</td>
+                        <td>Sep 2022</td>
+                    </tr>
+                    <tr>
+                        <td>Contraint-based Procedural Generation</td>
+                        <td>Aug 2022</td>
+                    </tr>
+                    <tr>
+                        <td>3D Cellular Automata</td>
+                        <td>Apr 2022</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="height: 50px;"></div>
+            <div class="table">
+                <div class="title">Demos</div>
+                <table>
+                    <tr>
+                        <td>SDF path tracing v.2</td>
+                        <td>(WebGPU)</td>
+                    </tr>
+                    <tr>
+                        <td>Web.vox</td>
+                        <td>(WebGPU)</td>
+                    </tr>
+                    <tr>
+                        <td>WebGPU Voxel Fractals</td>
+                        <td>(WebGPU)</td>
+                    </tr>
+                    <tr>
+                        <td>WebGPU "Wavefront" Path Tracing</td>
+                        <td>(WebGPU)</td>
+                    </tr>
+                    <tr>
+                        <td>WebGL Voxel Fractals</td>
+                        <td>(WebGL2)</td>
+                    </tr>
+                    <tr>
+                        <td>SDF path tracing v.1</td>
+                        <td>(WebGPU)</td>
+                    </tr>
+                    <tr>
+                        <td>Contraint-based Procedural Generation</td>
+                        <td>(WebGPU)</td>
+                    </tr>
+                    <tr>
+                        <td>3D Cellular Automata</td>
+                        <td>(WebGL2)</td>
+                    </tr>
+                </table>
+            </div>
+            <div style="height: 50px;"></div>
+            <div class="table">
+                <div class="title">Links</div>
+                <div><a href="https://twitter.com/AddisonPrairie">Twitter/AddisonPrairie</a></div>
+                <div><a href="https://www.youtube.com/channel/UCEGItQR2innAFiH3PYbg4Fw">Youtube/AddisonPrairie5315</a></div>
+                <div><a href="https://github.com/AddisonPrairie">GitHub/AddisonPrairie</a></div>
+            </div>
+        </div>
+        </div>
+        <div class="right-column column">
+            <div class="img" style="width: 90%; max-width: 600px; display: none;">
+                <img src="//live.staticflickr.com/65535/53023267964_7fe35e0a4b_b.jpg" style="width: 100%;">
+                <div style="margin-top: 5px; text-align: center;">Path traced scan of a Hannibal sculpture by Sebastian Slodtz. Model courtesy <a href="">scan the world</a>.</div>
+            </div>
+            <div class="img" style="width: 90%; max-width: 600px;">
+                <img src="media/sdf002/SDF002relicplain.png" style="width: 100%;">
+                <div style="margin-top: 5px; text-align: center;">Path traced fractal with procedural solid texturing.</div>
+            </div>
+        </div>
+    </body>
+</html>

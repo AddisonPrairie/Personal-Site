@@ -1,0 +1,460 @@
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+        <style>
+            body {
+                margin: 0px;
+                font-family: "Overpass Mono", monospace;
+                font-size: 13.5px;
+            }
+            .center {
+                width: 80%;
+                max-width: 800px;
+                margin: 50px auto 100px auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .title {
+                text-align: center;
+                font-size: 20px;
+                margin: 10px 0px 10px 0px;
+            }
+            .links {
+                margin: 0px 10px 10px;
+            }
+            .img {
+                margin-top: 10px;
+                margin-bottom: 5px;
+            }
+            .img img {
+                
+            }
+            .img div {
+                font-size: 12px;
+                text-align: center;
+                margin-top: 5px;
+            }
+            .text {
+                hyphens: auto;
+                margin: 5px 0px;
+                width: 100%;
+            }
+            .code {
+                width: calc(100% - 10ch);
+                display: flex;
+                flex-direction: row;
+                margin: 10px 0px;
+            }
+            .code pre {
+                font-family: "Overpass Mono", monospace;
+                font-size: 13px;
+                width: calc(100% - 4ch);
+                margin: 0px;
+                line-height: 16.05px;
+            }
+            .code div {
+                text-align: right;
+                margin-right: 15px;
+                font-size: 10px;
+                line-height: 16.05px;
+                color: #3b3b3b;
+            }
+            .code-comment {
+                color: #888888;
+            }
+            table td {
+                font-family: "Overpass Mono", monospace;
+                font-size: 13.5px;
+                padding: 5px 10px;
+            }
+            .image-link:hover {
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="center">
+            <div class="title">SDF Path Tracing 2</div>
+            <div class="links">
+                Addison Prairie / August 23
+            </div>
+            <div class="text">
+                Recently, while on a plane ride, I decided to write a small signed distance function (SDF) path tracer to learn some new techniques. This article will probably be fairly short since I did not do too much on this (mini) project; however, I still wanted to go over some of the things I learned and show some interesting renders. Clicking on each of the images below will open a demo page which renders them live.
+            </div>
+            <script>
+                function openDemo(name) {
+                    const elem = document.createElement("a");
+                    elem.href = "/demos/sdf002/" + name; 
+                    elem.target = "_blank";
+                    elem.click();
+                    
+                }
+            </script>
+            <div class="img" style="width: 100%; justify-content: center;">
+                <div style="display: flex; justify-content: center;">
+                    <img src="/media/sdf002/sdf002mecanique.jpg" style="width: 33%;" onclick="openDemo('mecanique')" class="image-link">
+                    <img src="/media/sdf002/sdf002relic.jpg" style="width: 33%;" onclick="openDemo('relic')" class="image-link">
+                    <img src="/media/sdf002/sdf002pillar.jpg" style="width: 33%;" onclick="openDemo('pillar')" class="image-link">
+                </div>
+                <div style="width: 83.33%; margin: 0px auto;">Three path traced SDFs using procedural solid texturing and GGX-Smith microfacet model for rough specular reflections.</div>
+            </div>
+            <div class="title">1. GPU SDF Path Tracing</div>
+            <div class="text">
+                One of the things I wanted to learn more about for this project was path tracing scattering media, like clouds, smoke, and skin. However, media which have a high probability of scattering light are difficult to path trace on the GPU because a ray which enters them may require many iterations to terminate; as described briefly in my <a href="/writing/wpt001/">writing about wavefront path tracing</a>, a port of the standard CPU path tracing loop will suffer greatly from thread divergence, especially when a large number of iterations are required for a ray to terminate. Thus, a different model of path tracing must be used. In my article, I gave the following code snippet of a path tracing loop which regenerates rays each iteration to decrease the number of idle threads in a workgroup: 
+            </div>
+            <div class="code">
+                <div>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30</div>
+<pre>
+<span class="code-comment">//assuming position o, direction d are already defined</span>
+
+<span class="code-comment">//t is the light accumulated across the path</span>
+var t = vec3f(0.);
+var b = vec3f(1.);
+
+var samples = 0;
+
+for (var i = 0; i &lt; MAX_BOUNCES; i++) {
+    var normal : vec3f;
+    var   dist :   f32;
+
+    var bHit : bool = trace(o, d, &normal, &dist);
+
+    <span class="code-comment">//if path did not hit an object, accumulate sky color and break</span>
+    if (!bHit) {
+        t += b * SKY_COLOR;
+        samples++;
+
+        regenerateCameraRay(&o, &d);
+        b = vec3f(1.);
+    } else {
+        o = o + d * dist + normal * .001;
+
+        b *= Sample_f_lambert(normal, &d);
+    }
+}
+
+<span class="code-comment">//safeguard to prevent NaN</span>
+var sumColor = samples == 0 ? vec3f(0.) : t / f32(samples);
+</pre>
+            </div>
+            <div class="text">
+                For this project, I ended up using a very similar style of loop. The entire path tracer fits into a single GPU kernel, making it easy to debug. For each pixel in the image, 4 things are stored in memory: the path position (o), the path direction (d), the path throughput (b), and the pixel's accumulated samples (t). The shader is structured like this:
+            </div>
+            <div class="code">
+                <div>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32</div>
+<pre>
+<span class="code-comment">//[o.x, o.y, o.z, random_seed]</span>
+@group(0) @binding(0) var>&lt;storage, read_write&gt; oBuffer : array&lt;vec4f&gt;;
+<span class="code-comment">//[d.x, d.y, d.z, num_bounces]</span>
+@group(0) @binding(1) var>&lt;storage, read_write&gt; dBuffer : array&lt;vec4f&gt;;
+<span class="code-comment">//[b.x, b.y, b.z, ~]</span>
+@group(0) @binding(0) var>&lt;storage, read_write&gt; bBuffer : array&lt;vec4f&gt;;
+<span class="code-comment">//stores accumulated samples</span>
+@group(0) @binding(0) var>&lt;storage, read_write&gt; tBuffer : array&lt;vec4f&gt;;
+
+@compute @workgroup_size(8, 8, 1)
+fn main(@builtin(global_invocation_id) global_id : vec3u) {
+    <span class="code-comment">//check we don't have thread out of bounds</span>
+    if (outOfImageBounds(global_id.xy)) {return;}
+
+    var bufferIndex = dot(global_id.xy, SCREEN_WIDTH);
+
+    <span class="code-comment">//fetch path state from memory</span>
+    var o = oBuffer[bufferIndex];
+    var d = dBuffer[bufferIndex];
+    var b = bBuffer[bufferIndex];
+    var t = tBuffer[bufferIndex];
+
+    for (var i = 0; i &lt; ITER_PER_INVOCATION; i++) {
+        extendPath(global_id.xy, &o, &d, &b, &t);
+    }
+
+    <span class="code-comment">//send incremented path state to memory</span>
+    oBuffer[bufferIndex] = o;
+    dBuffer[bufferIndex] = d;
+    bBuffer[bufferIndex] = b;
+    tBuffer[bufferIndex] = t;
+}
+</pre>
+            </div>
+            <div class="text">
+                Here are some notes about the parts of this code:
+            </div>
+            <div style="width: 90%">
+                <ol>
+                    <li>Memory Alignment: because of the way GPUs are designed, a 12 byte vector (i.e., vec3f, vec3i, etc.) must be read from memory with a 16 byte alignment; so, in memory, your GPU automatically pads each 12 byte vector to be 16 bytes wide. Although position, direction, and throughput are all 12 byte quantities, the program stores additional information in the required 4 extra bytes.</li>
+                    <br>
+                    <li>oBuffer: the first three components of o represent the position of the path at its current vertex. For example, when a path is first generated, its position would just be the position of the camera pinhole; subsequent extensions would store wherever the path intersects the scene. In the fourth component of o, I chose to store the seed used to generate the pseudo-random values required for Monte-Carlo path tracing. While any hash function will work, I chose to use those described in <a href="https://www.shadertoy.com/view/XlycWh">this shadertoy</a>.</li>
+                    <br>
+                    <li>dBuffer: the first three components of d represent the direction of the path at its current vertex. For example, when a path is first generated, the direction is determined by the pixel's coordinate and the camera's oriented; subsequent extensions would store the direction the path was scattered at a surface. In the fourth component of d, I decided to store the number of bounces the current path has taken. This is important because it can be used in Russian Roulette and to terminate paths which are taking too long.</li>
+                    <br>
+                    <li>bBuffer: the first three components of b represent the current throughput of the path. When a ray is first generated, this is set to (1., 1., 1.); if it then hits a red diffuse surface, it might be updated to (1., .5, .5). Additionally, a throughput of (0., 0., 0.) is used to signal to the path tracer that a path should be reset. For example, if a path "dies" to Russian Roulette or does not intersect the scene, the throughput will be set to (0., 0., 0.) so that the next call to extendPath() knows to regenerate the path. Currently, I have nothing stored in the fourth component of b.</li>
+                    <br>
+                    <li>tBuffer: out of the 4 buffers, this one is probably the simplest. It just stores the accumulated samples for a given pixel. So, once a ray terminates, the throughput of that ray is added to the first 3 components of t, and the 4th component is just incremented by 1.</li>
+                </ol>
+            </div>
+            <div class="text">
+                With that, here is an implementation of extendPath() without participating media:
+            </div>
+            <div class="code">
+                <div>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37<br>38<br>39<br>40<br>41<br>42<br>43<br>44<br>45<br>46<br>47<br>48<br>49<br>50<br>51<br>52<br>53<br>54<br>55<br>56<br>57<br>58<br>59<br>60<br>61<br>62<br>63<br>64<br>65<br>66<br>67<br>68<br>69<br>70<br>71<br>72<br>73<br>74<br>75<br>76<br>77<br>78<br>79<br>80<br>81<br>82<br>83<br>84<br>85<br>86<br>87<br>88<br>89<br>90<br>91<br>92<br>93<br>94<br>95<br>96<br>97</div>
+<pre>
+<span class="code-comment">//typedef for brevity</span>
+alias p_vec4f = ptr&lt;function, vec4f&gt;;
+
+<span class="code-comment">//result of ray-scene intersection function</span>
+struct RayHit {
+    norm : vec3f, <span class="code-comment">//hit normal</span>
+    dist :   f32, <span class="code-comment">//distance along ray to intersection</span>
+    imat :   i32, <span class="code-comment">//index of material hit</span>
+    bHit :  bool  <span class="code-comment">//signals whether ray found an intersection</span>
+};
+
+fn extendPath(
+    imgCoord : vec2i, 
+    oIn : p_vec4f, 
+    dIn : p_vec4f, 
+    bIn : p_vec4f, 
+    tIn : p_vec4f
+    ) {
+    
+    var o = (*oIn).xyz;
+    var d = (*dIn).xyz;
+    var b = (*bIn).xyz;
+
+    var random_seed = (*oIn).a;
+    var num_bounces = (*dIn).a;
+
+    <span class="code-comment">//if this is the first kernel execution, initialize the seed</span>
+    var bNewPath = all(b == vec3f(0.));
+    var bFirstKernelExecution = bNewPath && (*tIn).a == 0.;
+
+    if (bFirstKernelExecution) {
+        <span class="code-comment">//can use whichever hash you'd like</span>
+        seed = initializeSeed(imgCoord);
+    }
+
+    <span class="code-comment">//if new path is signaled, regenerate the path</span>
+    if (bNewPath) {
+        <span class="code-comment">//regenerate the position and direction</span>
+        getCameraRay(imgCoord, &random_seed, &o, &d);
+        <span class="code-comment">//reset throughput</span>
+        b = vec3f(1.);
+    }
+
+    var hitResult : RayHit = trace(o, d);
+    <span class="code-comment">//if the path hit a surface, update throughput and scatter</span>
+    if (res.bHit) {
+        <span class="code-comment">//get a local basis around the hit normal</span>
+        var o1 = normalize(ortho(hitResult.norm));
+        var o2 = cross(o1, hitResult.norm);
+
+        <span class="code-comment">//write d in local basis for brdf evaluation</span>
+        var wo = toLocal(o1, o2, hitResult.norm, -d);
+
+        <span class="code-comment">//the paths outgoing direction</span>
+        var wi : vec3f;
+        var  c : vec3f;
+
+        <span class="code-comment">//evaluate brdf at point</span>
+        if (res.imat == 0) {
+            <span class="code-comment">//basic red diffuse</span>
+            c = lambertDiffuse_Samplef(&seed, &wi, wo, vec3f(1., .5, .5));
+        }
+
+        <span class="code-comment">//update throughput</span>
+        b *= c;
+        <span class="code-comment">//update position</span>
+        o = o + d * hitResult.dist + hitResult.norm * EPSILON;
+        <span class="code-comment">//update direction</span>
+        d = toWorld(o1, o2, hitResult.norm, wi);
+
+        <span class="code-comment">//perform Russian Roulette, as described <a href="https://www.pbr-book.org/3ed-2018/Light_Transport_I_Surface_Reflection/Path_Tracing">here</a></span>
+        if (num_bounces > 3) {
+            var q = max(.05f, 1. - b.y);
+            if (rand1(&random_seed) &lt; q) {
+                b = vec3f(0.);
+            } else {
+                b /= 1. - q;
+            }
+        }
+
+        <span class="code-comment">//if ray died, accumulate this sample</span>
+        if (all(b == vec3f(0.))) {
+            *tIn += vec4f(0., 0., 0., 1.);
+            num_bounces = 0.;
+        }
+    } else {
+        <span class="code-comment">//otherwise, the path missed the scene and hit the skylight</span>
+        *tIn += vec4f(b * SKY_LIGHT, 1.);
+        num_bounces = 0.;
+        b = vec3f(0.);
+    }
+
+    <span class="code-comment">//update path state</span>
+    *oIn = vec4f(o, random_seed);
+    *dIn = vec4f(d, num_bounces + 1.);
+    *bIn = vec4f(b, 1.);
+}
+</pre>
+            </div>
+            <div class="text">
+                The code is broken down as follows:
+            </div>
+            <div style="width: 90%;">
+                <ol>
+                    <li>Lines 27-34: if this is the first time executing the kernel, the random seed needs to be initialized. Lines 28-29 check that this is the first execution by checking that the throughput is zero and no samples have been accumulated so far; lines 31-34 will initialize the seed based on the pixel's coordinate in the image.
+                    </li>
+                    <br>
+                    <li>Lines 37-42: if the throughput is zero, the path needs to be regenerated; line 39 generates the new ray based on the pixel's coordinate in the image, and line 41 resets the throughput to (1., 1., 1.).
+                    </li>
+                    <br>
+                    <li>Line 44: call the trace() function. In this case, just ray march an SDF.</li>
+                    <br>
+                    <li>Lines 47-85: if we hit a surface, handle BRDF evaluation, update the path, and perform Russian Roulette:
+                        <br>
+                        <br>
+                        <ol>
+                            <li>Lines 47-56: create a basis around the hit normal and write the outgoing direction "wo" i that basis to simplify BRDF evaluation.</li>
+                            <li>Lines 58-62: based on the material index in "hitResult", evaluate the BRDF. In this case, the scene consists of a single, red diffuse object.</li>
+                            <li>Lines 64-69: update the throughput, path position, and update the path direction by transforming "wi" into world space.</li>
+                            <li>Lines 71-79: perform Russian Roulette.</li>
+                            <li>Lines 82-85: if the throughput is zero, either because the material evaluation caused it to be zero or because it was killed by Russian Roulette, accumulate a zero sample and reset "num_bounces".</li>
+                        </ol>
+                    </li>
+                    <br>
+                    <li>Lines 87-90: if the ray did not intersect the scene, accumulate light from the sky and set the throughput to zero.</li>
+                    <br>
+                    <li>Lines 93-96: update all of the pointers passed in.</li>
+                </ol>
+            </div>
+            <div class="text">
+                This is an extremely basic path tracer only capable of handling sky lights and non-emissive textures; however, it is pretty simple to integrate more features into it. In the future, I'd like to look at ways to build in next event estimation and multiple importance sampling to decrease the samples required to converge for images with strong direct lighting (i.e., sun light).
+            </div>
+            <div class="img" style="width: 60%;">
+                <img src="/media/sdf002/sdf002glassfractal.jpg" style="width: 100%;">
+                <div>Fractal rendered with glass material, rough metallic floor, and area light in background.</div>
+            </div>
+            <div class="title">2. Volumetric Path Tracing</div>
+            <div class="text">
+                Now that the path tracing loop has been properly ported to the GPU, implementing volumetric path tracing in an efficient way is not too hard. I based my implementation on PBR's <a href="https://www.pbr-book.org/3ed-2018/Light_Transport_II_Volume_Rendering/Volumetric_Light_Transport">volume integrator</a> with homogenous media. The path tracer is capable of rendering volumes that have constant absorption and scattering coefficicients throughout their entirety. Here is an outline of a modified version of the code above that accounts for participating media:
+            </div>
+            <div class="code">
+                <div>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37<br>38<br>39<br>40<br>41<br>42<br>43<br>44</div>
+<pre>
+fn extendPath(
+    imgCoord : vec2i, 
+    oIn : p_vec4f, 
+    dIn : p_vec4f, 
+    bIn : p_vec4f, 
+    tIn : p_vec4f
+    ) {
+    <span class="code-comment">//break input vec4fs into component parts & initialize seeds/paths</span>
+    ...
+    
+    var res : RayHit = trace(o, d);
+
+    var bMediaInteraction = false;
+    if (isInVolume(o)) {
+        <span class="code-comment">//sample scattering distance from absorption and scattering coefficients</span>
+        var scatteringDistance = ...;
+
+        bMediaInteraction = scatteringDistance &lt; res.dist;
+
+        <span class="code-comment">//update throughput</span>
+        b *= ...;
+
+        <span class="code-comment">//if the ray scattered, update the position and direction</span>
+        if (bMediaInteraction) {
+            o = o + d * scatteringDistance;
+            d = samplePhaseFunction(&random_seed);
+        }
+    }
+
+    if (!bMediaInteraction && res.bHit) {
+        <span class="code-comment">//evaluate surface interaction like above</span>
+        ...
+    }
+
+    <span class="code-comment">//NOTE: move Russian Roulette here to also randomly terminate scattering paths</span>
+    if (bounces > 10) {
+        ...
+    }
+
+    if (!bMediaInteraction && !res.bHit) {
+        <span class="code-comment">//the path escaped the scene and hit the skylight</span>
+        ...
+    }
+}
+</pre>
+            </div>
+            <div class="text">
+                The actual implementation of the code in lines 15-27 depends on what type of media the path tracer is rendering. In the example below, I used a volume defined only by a scattering coefficicient (i.e., no absorption). The volume had a high probability of scattering red light but a lower probability of scattering blue and green light. So, near the light source, the ball appears red, as much of the light which is scattered towards the camera is red light. However, only blue and green light can reasonably reach points further away from the light withouth scattering, so the rest of the sphere is a teal color:
+            </div>
+            <div class="img" style="width: 60%;">
+                <img src="/media/sdf002/sdf002ssssphere.jpg" style="width: 100%;">
+                <div>Homogenous scattering volume with different scattering probabilities for different wavelengths of light.</div>
+            </div>
+            <div class="text">
+                Based on <a href="https://pbr-book.org/3ed-2018/Light_Transport_II_Volume_Rendering/Sampling_Volume_Scattering#Medium::Sample">this chapter</a>, I modeled scattering and absorbing materials like this:
+            </div>
+            <div class="code">
+                <div>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33</div>
+<pre>
+if (isInVolume(o)) {
+    <span class="code-comment">//properties of the volume</span>
+    var sigma_s : vec3f = SCATTERING_COEFFICIENT;
+    var sigma_a : vec3f = ABSORPTION_COEFFICIENT;
+
+    <span class="code-comment">//the transmittance coefficient is the combination of scattering and absorption</span>
+    var sigma_t : vec3f = sigma_s + sigma_a;
+
+    <span class="code-comment">//pick a channel (i.e., R, G, or B) to importance sample</span>
+    var sampledChannel = i32(floor(rand1(&seed) * 3.));
+
+    <span class="code-comment">//importance sample exp(-sigma_t * x)</span>
+    var scatteringDistance = -log(1. - rand1(&seed)) / sigma_t[sampledChannel];
+    <span class="code-comment">//the nearer of the scattering distance & surface intersection distance</span>
+    var t = min(scatteringDistance, res.dist);
+
+    <span class="code-comment">//least distance == scattering distance => vertex is a media interaction</span>
+    var bMediaInteraction = t &lt; res.dist;
+
+    <span class="code-comment">//calculate pdf of sampled distance</span>
+    var tr = exp(-sigma_t * t);
+    var density = bMediaInteraction ? tr * sigma_t : tr;
+    var pdf = dot(density, vec3f(1.)) * (1. / 3.);
+
+    <span class="code-comment">//update transmittance based on whether or not the path scattered</span>
+    b *= tr * (bMediaInteraction ? sigma_s : vec3f(1.)) / pdf;
+
+    <span class="code-comment">//if this is a media interaction, update position and direction</span>
+    if (bMediaInteraction) {
+        o = o + d * dist;
+        d = uniformSampleHemisphere(&seed);
+    }
+}
+</pre>
+            </div>
+            <div class="text">It begins by computing "sigma_t", which is a vector representing the probability light being scattered or absorbed over a distance. To reduce variance, it is best to importance sample the random distance the path will walk; however, with different scattering and absorption probabilities for different colors of light, importance sampling becomes more complex. First, a channel to importance sample is randomly picked (line 10). Then, the channel is importance sampled to generate a scattering distance (line 13), which is the distance the path would need to travel unimpeded before scattering. To check whether the next vertex will be a media or surface interaction, line 18 checks whether the scattering distance is less than "res.dist", the nearest surface along the ray. Lines 21-23 calculate the probability density of the sampled distance; the reasoning behind this chunk of the code can be found <a href="https://pbr-book.org/3ed-2018/Light_Transport_II_Volume_Rendering/Sampling_Volume_Scattering#Medium::Sample">here</a>. Finally, the path throughput is updated (line 26) and, if the current path vertex is a media interaction, the position is updated (line 30) and the phase function is sampled (line 31) to generate a new path direction.</div>
+            <div class="img" style="width: 60%;">
+                <img src="/media/sdf002/sdf002scattering.jpg" style="width: 100%;">
+                <div>Homogenous scattering volume with different scattering probabilities for different wavelengths of light. The is white and the fog does not absorb any wavelength of light; the color of both is due only to the scattering of the volume.</div>
+            </div>
+            <div class="title">3. Wrapping Up</div>
+            <div class="text">
+                One of the aspects of the project that I did not write about here is procedural solid texturing. SDFs are not amenable to the usual texture or even UV-based material systems that most triangle-based renderers use. Instead, materials are evaluated as a function of world-space position (hence the term "solid texturing"). Additionally, rather than this material being precomputed, it is calculated at the time of intersection. I chose not to go into to much detail about procedural solid texturing here because I am hoping to explore more complex materials in the future.
+            </div>
+            <div class="text">
+                Additionally, I will post something soon about using next event estimation in this path tracer. Typically, path tracers which work with BVH/KD-tree scenes have different, more efficient intersection functions for calculating only visibility (i.e., "any-hit" vs. "nearest-hit"); however, with ray marching, there is no difference between the two. This could allow a path tracer to treat ray traces which extend the path the same as ray traces for visibility, meaning those could "overlap" the same way that different paths can overlap by regenerating while others continue.
+            </div>
+            <div class="links" style="margin-top: 10px;">
+                <a href="./">top</a> / <a href="/">home</a>
+            </div>
+        </div>
+    </body>
+</html>

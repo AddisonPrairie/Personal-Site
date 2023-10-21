@@ -1,0 +1,88 @@
+<html>
+    <!--to get consistent screenshot, do 798x1155-->
+    <head>
+        <script src="script.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap" rel="stylesheet">
+        <script>
+            window.onload = async () => {
+                const res = await compile(document.querySelector("#render-target"));
+                for (var i = 0; i < 1500; i++) await res.frame()
+            }
+        </script>
+        <style>
+            body {
+                background-color: white;
+                margin: 0px; padding: 0px;
+            }
+            .holder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0px; padding: 0px;
+            }
+            .caption {
+                word-break: break-all; 
+                position: absolute; 
+                bottom: 1.333%;
+                right: 2%;
+                width: 20%;
+                z-index: 1; 
+                color: white;
+            }
+            body {
+                font-family:  "Overpass Mono";
+                font-variant-ligatures: no-common-ligatures;
+                font-size: 13px;
+            }
+            .title {
+                word-break: break-all; 
+                position: absolute; 
+                width: 8%;
+                top: 1.33%;
+                left: 2%;
+                z-index: 2; 
+                color: white;
+                writing-mode: vertical-lr;
+                text-orientation: upright;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="holder">
+            <div style="height: 95%; aspect-ratio: .6667; position: relative;">
+                <canvas id="render-target" style="position: absolute; z-index: 0; width: 100%; height: 100%;"></canvas>
+                <!--<div class="caption">
+                    fn DE(p0:vec3f)->f32{var p:vec3f=vec3f(p0.x,p0.z-.5,p0.y+.5)*5.;p.z-=2.5;var s:f32=3.;var e:f32=0.;for(var j:i32=0;j<9;j++){e=3.8/clamp(dot(p,p),0.,2.);s*=e;p=abs(p)*e-vec3f(1.,15.,1.);}return.2*length(cross(p,vec3f(1.,1.,-1.)*.577))/s;}
+                    <br>
+                    <br>
+                    from: gaziya5<br>
+                    <br>
+                    slight twist<br>
+                    diffuse material<br>
+                    metal walls<br>
+                    white sky<br>
+                    using WebGPU<br>
+                    505 loc<br>
+                    9.5.23
+                </div>
+                <div class="title">
+                    PILLAR
+                </div>-->
+            </div>
+        </div>
+        <script>
+            const caption = document.querySelector(".caption");
+            new ResizeObserver(() => {
+                caption.style["font-size"] = `${caption.clientWidth/10}px`;
+            }).observe(caption)
+            const title = document.querySelector(".title");
+            new ResizeObserver(() => {
+                title.style["font-size"] = `${title.clientWidth}px`;
+            }).observe(title)
+        </script>
+    </body>
+</html>

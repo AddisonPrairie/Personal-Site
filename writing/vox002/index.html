@@ -1,0 +1,334 @@
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+        <style>
+            body {
+                margin: 0px;
+                font-family: "Overpass Mono", monospace;
+                font-size: 13.5px;
+            }
+            .center {
+                width: 80%;
+                max-width: 800px;
+                margin: 50px auto 100px auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .title {
+                text-align: center;
+                font-size: 20px;
+                margin: 10px 0px 10px 0px;
+            }
+            .links {
+                margin: 0px 10px 10px;
+            }
+            .img {
+                margin-top: 10px;
+                margin-bottom: 5px;
+            }
+            .img img {
+                
+            }
+            .img div {
+                font-size: 12px;
+                text-align: center;
+                margin-top: 5px;
+            }
+            .text {
+                hyphens: auto;
+                margin: 5px 0px;
+                width: 100%;
+            }
+            .code {
+                width: calc(100% - 10ch);
+                display: flex;
+                flex-direction: row;
+                margin: 10px 0px;
+            }
+            .code pre {
+                font-family: "Overpass Mono", monospace;
+                font-size: 13px;
+                width: calc(100% - 4ch);
+                margin: 0px;
+                line-height: 16.05px;
+            }
+            .code div {
+                text-align: right;
+                margin-right: 15px;
+                font-size: 10px;
+                line-height: 16.05px;
+                color: #3b3b3b;
+            }
+            .code-comment {
+                color: #888888;
+            }
+            table td {
+                font-family: "Overpass Mono", monospace;
+                font-size: 13.5px;
+                padding: 5px 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="center">
+            <div class="title">WebGPU Voxel Fractals</div>
+            <div class="links">
+                Addison Prairie / July 23
+            </div>
+            <div class="text">
+                One of the projects I have been most eager to revisit is "WebGL Voxel Fractals". It was my first time working with acceleration structures and real time rendering, and I have many ideas for how I could improve the project. Additionally, with WebGPU supporting rolling out with Chrome 113, a lot of work that originally would have occupied the CPU thread can be moved onto the GPU via compute shaders.
+            </div>
+            <div class="text">
+                The demo page for the project can be found <a>here</a>. The "help" button on the UI will open up a window that explains the controls, how to interact with the scene, and gives some notes about the procedural generation algorithm.
+            </div>
+            <div class="img" style="width: 100%; max-width: 600px;">
+                <img src="/media/vox002/vox002copper.png" style="width: 100%;">
+                <div>Pathtraced 512x512x512 voxel fractal. Generated in ~15s and rendered in ~5s</div>
+            </div>
+            <div class="title">1. Voxels & Voxel Acceleration Structures</div>
+            <div class="text">
+                The most performance critical part of the rendering loop is the ray-scene intersection function. While it seems that the conventional wisdom is that Sparse Voxel Octrees (SVOs) are the ideal acceleration structure for large voxel volumes, their design carries some disadvantages that are only overcome by extremely large scenes. Some of these disadvantages include:
+            </div>
+            <div style="width: 80%">
+                <ol>
+                    <li>Incoherent Memory: inherent in any tree/pointer-based acceleration structure is the tendency for a thread to jump around somewhat randomly in memory while traversing the acceleration structure. This takes a significant toll on performance.</li>
+                    <li>Long Construction Time: it is difficult to construct a sparse voxel octree on the GPU efficiently, since writing to a sparse structure requires inter-thread communcation and memory coherency.</li>
+                    <li>Slow to edit: sparse voxel octrees are slow to edit, since any manipulation to the structure may require the deletion or insertion of nodes into the structure.</li>
+                </ol>
+            </div>
+            <div class="text">
+                Given these limitations, and the capabilities of modern GPUs, I decided to use a dense voxel octree (DVO) to accelerate ray tracing. Basically, rather than storing different levels of details as different heights in an SVO, a DVO stores a dense (think linear array) representation of the scene at every level of detail. Consider the following example of a 2D scene:
+            </div>
+            <div>
+<pre>
++---+---+---+---+---+---+---+---+
+| 1 | 1 |   |   |   |   |   |   |
++---+---+---+---+---+---+---+---+
+|   |   |   |   |   |   |   |   |
++---+---+---+---+---+---+---+---+
+|   |   | 1 |   |   |   |   |   |
++---+---+---+---+---+---+---+---+
+|   |   |   |   |   |   |   |   |
++---+---+---+---+---+---+---+---+
+| 1 | 1 |   |   |   |   |   |   |
++---+---+---+---+---+---+---+---+
+| 1 | 1 |   |   |   |   |   |   |
++---+---+---+---+---+---+---+---+
+|   |   |   |   |   |   |   |   |
++---+---+---+---+---+---+---+---+
+|   |   |   |   |   |   | 1 |   |
++---+---+---+---+---+---+---+---+
+</pre>
+            </div>
+            <div class="text">
+                The sparse voxel octree (or quadtree in this example) would for this scene would look something like this:
+            </div>
+            <div>
+<pre>
+                     +---+---+ 
+                     | 1 | 0 | 
+                     +---+---+             (LOD 3)
+                     | 1 | 1 | 
+                     +---+---+                         
+                         |     
+         +---------------+-----------+  
+         |               |           |  
+     +---+---+       +---+---+   +---+---+ 
+     | 1 | 0 |       | 1 | 0 |   | 0 | 0 |
+     + --+---+       +---+---+   +---+---+ (LOD 2)
+     | 0 | 1 |       | 0 | 0 |   | 0 | 1 | 
+     +---+---+       +---+---+   +---+---+ 
+         |               |           |
+    +----+----+          |           | 
+    |         |          |           | 
++---+---+ +---+---+  +---+---+   +---+---+ 
+| 1 | 1 | | 1 | 0 |  | 1 | 1 |   | 0 | 0 |
++---+---+ +---+---+  +---+---+   +---+---+ (LOD 1)
+| 0 | 0 | | 0 | 0 |  | 1 | 1 |   | 1 | 0 |
++---+---+ +---+---+  +---+---+   +---+---+ 
+</pre>
+            </div>
+            <div class="text">
+                Whereas the dense representation in memory would look like this:
+            </div>
+            <div>
+<pre>
++---+---+---+---+---+---+---+---+  +---+---+---+---+  +---+---+
+| 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  | 1 | 0 | 0 | 0 |  | 1 | 0 |
++---+---+---+---+---+---+---+---+  +---+---+---+---+  +---+---+
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  | 0 | 1 | 0 | 0 |  | 1 | 1 |
++---+---+---+---+---+---+---+---+  +---+---+---+---+  +---+---+
+| 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  | 1 | 0 | 0 | 0 |   (LOD 3)
++---+---+---+---+---+---+---+---+  +---+---+---+---+
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  | 0 | 0 | 0 | 1 |
++---+---+---+---+---+---+---+---+  +---+---+---+---+
+| 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |       (LOD 2)
++---+---+---+---+---+---+---+---+
+| 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
++---+---+---+---+---+---+---+---+
+| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
++---+---+---+---+---+---+---+---+
+| 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |
++---+---+---+---+---+---+---+---+
+             (LOD 1)
+</pre>
+            </div>
+            <div class="text">
+                Clearly, the dense representation has the potential to take up significantly more memory; however, it in turn does not suffer from any of the issues listed above. In WebGPU, the dense voxel octree can be stored in a 3D texture, and the higher LODs can be stored as MIP maps of that texture. As a set of rays travelling in roughly the same direction from the same position traverses the octree (like primary visibility rays), they will read from texture coordinates nearby eachother, which is much friendlier for the GPU texture units/caches. Additionally, it requires significantly (up to 75% less) less memory than a sparse structure because the dense representation understands the memory location of the next node to traverse implicitly (from its position) and thus does not need read a pointer in memory.
+            </div>
+            <div class="text">
+                The acceleration structure can pretty easily be built in parallel in a compute shader. One difficulty that arises in WebGPU is that there are some requirements for memory alignment when copying a storage buffer to a texture. First, WebGPU does not let you write to a byte in memory from a compute shader. So, if you want to store the higher LOD representations of your scene as bytes, you need to find some way to get around this limitation; for me, it was to build the acceleration structure first as u32s in an intermediate buffer, and then have another compute pass "pack" this structure into a format ready to be copied to a texture of bytes.
+            </div>
+            <!--<div class="img" style="width: 100%; aspect-ratio: 1; max-width: 600px;">
+                <img src="https://live.staticflickr.com/65535/53117853205_9c7d35c814_k.jpg" style="width: 100%; height: calc(100% - 16.6px); object-fit: cover;">
+                <div>Pathtraced 512x512x512 voxel fractal. Generated in ~15s and rendered in ~5s</div>
+            </div>-->
+            <div class="img" style="width: 100%; max-width: 600px;">
+                <img src="/media/vox002/vox002original.png" style="width: 100%;">
+                <div>Pathtraced 512x512x512 voxel fractal. Generated in ~15s and rendered in ~5s</div>
+            </div>
+            <div class="title">2. Traversing the Octree</div>
+            <div class="text">
+                Since the most performance critical portion of the rendering loop is the ray-scene intersection function, it is important that our octree traversal algorithm is optimized. For this project, I focused on optimizing a single traversal function which was loosely based on a voxel DDA. In the future, I'd like to revisit this project to test many different types of traversal functions to find which works best with a dense voxel octree.
+            </div>
+            <div class="text">
+                A basic voxel DDA operates by storing a variable, in my case called "dist", which for each x, y, z, stores the distance along the ray we must step to reach the next voxel edge parallel to the plane normal to that axis. A basic example in two dimensions would look like this:
+            </div>
+            <div>
+<pre>
++----------+---&gt; y
+|          |/  
+|  [0, 0]  B              KEY
+|         /|      +---------------------+
+|        / |      |  *  = ray origin    |
++-------A--+      |  /  = ray direction |
+|      /   |      | A/B = intersections |
+|     /    |      +---------------------+
+|    *     | 
+|  [1, 0]  |
++----------+
+|
+|
+v
+x
+</pre>
+            </div>
+            <div class="text">
+                With two dimensions, "dist" is a vector of two dimensions. In this case, the line that A is perpendicular to the x axis, so dist.x is the distance along the ray to reach A. Similarly, since B sits on a line perpendicular to the y axis, dist.y is the distance along the ray to reach B. To know which voxel to step into next, we just need to check which component of "dist" is least; in this case, the next step would be decreasing x by 1, moving from [1, 0] to [0, 0].
+            </div>
+            <div class="text">
+                I won't go into much more detail around the original DDA algorithm, since it is very well described in <a href="https://github.com/cgyurgyik/fast-voxel-traversal-algorithm/blob/master/overview/FastVoxelTraversalOverview.md">other places</a>. Here is a basic outline of my traversal function:
+            </div>
+            <div class="code">
+                <div>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37<br>38<br>39<br>40<br>41<br>42<br>43<br>44<br>45<br>46<br>47<br>48<br>49<br>50<br>51<br>52<br>53<br>54<br>55<br>56<br>57<br>58<br>59<br>60<br>61<br>62<br>63<br>64<br>65<br>66<br>67<br>68<br>69<br>70</div>
+<pre>
+fn trace(o : vec3f, d : vec3f) -> bool {
+    <span class="code-comment">//the starting LOD, log_2(SCENE_SIZE)</span>
+    var lod = STARTING_LOD;
+    
+    <span class="code-comment">//usual DDA stuff</span>
+    var ipos = vec3i(floor(o)) >> vec3u(lod);
+    var idir = abs(1. / d) * f32(SCENE_SIZE / 2);
+    var dist = (sign(d) * (vec3f(ipos) - o * (1. / f32(vsize))) + sign(d) * .5 + .5) * idir;
+    var step = vec3i(sign(d));
+
+    <span class="code-comment">//used for updating dist at lod change</span>
+    const DESCENT_MASK = vec3i(vec3f(d &lt; vec3f(0.)));
+    var mask : vec3b;
+
+    for (var i = 0; i &lt; MAX_STEPS; i++) {
+        <span class="code-comment">//fetch current node from memory</span>
+        var node = loadNode(ipos, lod);
+
+        var octant = ipos & vec3i(1);
+        var octantMask = 1u &lt;&lt; dot(octant, vec3i(1, 2, 4));
+
+        <span class="code-comment">//check if we hit something</span>
+        if ((node & octantMask) > 0) {
+            <span class="code-comment">//if we cannot go to a lower lod, we hit a voxel</span>
+            if (lod == 0u) {
+                return true;
+            }
+
+            var tmin = max(dot(dist - idir, vec3f(mask)), 0.);
+            var wpos = o + d * tmin + eps * vec3f(mask);
+
+            <span class="code-comment">//decrement LOD and update ipos</span>
+            ipos = vec3i(floor(wpos)) >> vec3u(--lod);
+
+            <span class="code-comment">//based on the octant we end up in, we must update "dist"</span>
+            var changeMask = vec3f((ipos & vec3i(1)) == DESCENT_MASK);
+            idir *= .5;
+            dist -= changeMask * idir;
+
+            continue;
+        }
+
+        <span class="code-comment">//usual DDA stuff</span>
+        mask = dist &lt;= min(dist.zxy, dist.yzx);
+        ipos += vec3i(vec3f(mask)) * step;
+
+        <span class="code-comment">//all of the directions such that a step in that direction would</span>
+        <span class="code-comment">//we should ascend the octree</span>
+        var exitMask = (vec3i(1) - DESCENT_MASK) == octant;
+        var bAscend  = any(exitMask & mask);
+        
+        <span class="code-comment">//if the node is empty or we exited, go up a level in the octree</span>
+        if (node == 0u || bAscend) {
+            dist += vec3f(!exitMask) * idir;
+            idir *= 2.;
+            lod += 1;
+            ipos = ipos &gt;&gt; vec3u(1u);
+
+            mask &= vec3b(ascend);
+            
+            if (isOutOfBounds(ipos, lod)) {
+                break;
+            }
+        }
+        
+        dist += vec3f(mask) * idir;
+    }
+
+    return false;
+}
+</pre>
+            </div>
+            <div class="text">
+                The first thing to note is that I chose to store 2x2x2 chunks of voxels in memory as bytes, meaning to tell whether a voxel is filled, you would first need to fetch the byte which contains it (line 17), then calculate the voxel's position in the 2x2x2 block and check the bit at that index within the byte (lines 19-20, 23). For example, to check whether the voxel at v = [63, 2, 1] was filled, we would look at the dot(v & 1, [1, 2, 4]) = 1 + 4 = 5th bit of the byte which corresponds to that voxel.
+            </div>
+            <div class="text">
+                A decent chunk (lines 6-9, 44-45, 66) of the function is standard DDA stuff; the rest of the code allows the DDA to seamlessly traverse the scene at different levels of detail. As far as I can tell, this strategy for traversing a voxel scene at multiple levels of detail is somewhat new, so I'll give a short explanation here of the ideas behind why it works:
+            </div>
+            <div style="width: 90%">
+                <ol>
+                    <li>If we go down a level of detail (lines 23-40), we must calculate our new world position (line 30) to determine the new voxel we are in. We can use "dist", but must subtract the last step we took (i.e., "idir * vec3f(mask)", since "mask" is stored across loop iterations). Next, we calculate the current voxel in line 33. Finally, see that it is possible that "dist" must be updated based on where we descend to; however, we know this change from "DESCENT_MASK" and the octant of the voxel position.</li>
+                    <br>
+                    <li>If we go up a level of detail (lines 54-63), it is easier to update our voxel position (line 57). Again, we will likely have to update "dist". First, in line 54, we update "dist" so that every component of "dist" which is not giving the distance to the edge of the current 2x2x2 block is updated. Additionally, "dist" must be updated again based on the step we just took, since if a step at the current LOD caused us to exit our current 2x2x2 block, then it must step into the next 2x2x2 block (line 66). Note that this should not be done if we are ascending a level only because our current 2x2x2 block is empty ("node == 0u"); so, if that is the case, "mask" is set to [false, false, false] (line 59).</li>
+                </ol>
+            </div>
+            <div class="img" style="width: 95%;">
+                <img src="/media/vox002/vox002grids.png" style="width: 100%">
+                <div>Pathtraced 512x512x512 voxel fractal. Generated in ~15s and rendered in ~5s</div>
+            </div>
+            <div class="title">3. Iterations</div>
+            <div class="text">
+                When I first started this project, I was planning on developing it into a real time voxel path tracer using SVGF as a denoiser. The initial tests went somewhat well, but I never felt like I quite hit the performance targets I wanted. Here is an early example of an expirement with real time path tracing:
+            </div>
+            <div class="img" style="width: 95%;">
+                <video style="width: 100%;" src="/media/vox002/vox002rtpt.mp4" type="video/mp4" controls></video>
+                <div>Early iteration of real time voxel path tracer, running at ~80 fps on my laptop.</div>
+            </div>
+            <div class="text">
+                Note that there is no denoising; however, even without it, the image still converges extremely quickly once the camera is still. I have a few other <a href="https://twitter.com/AddisonPrairie/status/1684270797588770817">clips</a> and <a href="https://twitter.com/AddisonPrairie/status/1685334289234202626">screenshots</a> showing some different early iterations of this real time voxel path tracer and the different techniques used, including .25spp path tracing and A-Trous denoising. However, none of them got me close enough to the performance I wanted, so I ultimately dropped trying to get it to run in real time. Eventually, I would like to try real time path tracing again.
+            </div>
+            <div class="links" style="margin-top: 10px;">
+                <a href="./">top</a> / <a href="/">home</a>
+            </div>
+        </div>
+    </body>
+</html>
