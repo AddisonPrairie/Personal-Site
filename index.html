@@ -64,7 +64,7 @@
                         <td>Aug 2023</td>
                     </tr>
                     <tr>
-                        <td>Web.vox</td>
+                        <td><a href="/writing/wvx001/">Web.vox</a></td>
                         <td>Aug 2023</td>
                     </tr>
                     <tr>
@@ -76,23 +76,23 @@
                         <td>Jun 2023</td>
                     </tr>
                     <tr>
-                        <td>pbr v.1</td>
+                        <td><a href="/writing/old001/">PBR 1</a></td>
                         <td>Feb 2023</td>
                     </tr>
                     <tr>
-                        <td>WebGL Voxel Fractals</td>
+                        <td><a href="/writing/old001/">WebGL Voxel Fractals</a></td>
                         <td>Dec 2022</td>
                     </tr>
                     <tr>
-                        <td>SDF path tracing v.1</td>
+                        <td><a href="/writing/old001/">SDF Path Tracing 1</a></td>
                         <td>Sep 2022</td>
                     </tr>
                     <tr>
-                        <td>Contraint-based Procedural Generation</td>
+                        <td><a href="/writing/old001/">Contraint-based Procedural Generation</a></td>
                         <td>Aug 2022</td>
                     </tr>
                     <tr>
-                        <td>3D Cellular Automata</td>
+                        <td><a href="/writing/old001/">3D Cellular Automata</a></td>
                         <td>Apr 2022</td>
                     </tr>
                 </table>
@@ -102,7 +102,7 @@
                 <div class="title">Demos</div>
                 <table>
                     <tr>
-                        <td>SDF path tracing v.2</td>
+                        <td>SDF path tracing 2</td>
                         <td>(WebGPU)</td>
                     </tr>
                     <tr>
@@ -122,7 +122,7 @@
                         <td>(WebGL2)</td>
                     </tr>
                     <tr>
-                        <td>SDF path tracing v.1</td>
+                        <td>SDF path tracing 1</td>
                         <td>(WebGPU)</td>
                     </tr>
                     <tr>
@@ -131,7 +131,7 @@
                     </tr>
                     <tr>
                         <td>3D Cellular Automata</td>
-                        <td>(WebGL2)</td>
+                        <td>(WebGL1)</td>
                     </tr>
                 </table>
             </div>
@@ -144,15 +144,48 @@
             </div>
         </div>
         </div>
+        <style>
+            .img div {
+                margin-top: 5px;
+                text-align: center;
+            }
+        </style>
         <div class="right-column column">
-            <div class="img" style="width: 90%; max-width: 600px; display: none;">
-                <img src="//live.staticflickr.com/65535/53023267964_7fe35e0a4b_b.jpg" style="width: 100%;">
-                <div style="margin-top: 5px; text-align: center;">Path traced scan of a Hannibal sculpture by Sebastian Slodtz. Model courtesy <a href="">scan the world</a>.</div>
+            <div class="img" style="width: 90%; max-width: 600px;">
+                <img src="media/wpt001/wpt001hannibalclay.png" style="width: 100%;">
+                <div>Pathtraced scan of a Hannibal sculpture by Sebastian Slodtz. Model courtesy <a href="">scan the world</a>.</div>
             </div>
             <div class="img" style="width: 90%; max-width: 600px;">
                 <img src="media/sdf002/SDF002relicplain.png" style="width: 100%;">
-                <div style="margin-top: 5px; text-align: center;">Path traced fractal with procedural solid texturing.</div>
+                <div>Pathtraced fractal with procedural solid texturing.</div>
+            </div>
+            <div class="img" style="width: 90%; max-width: 600px">
+                <img src="/media/sdf002/sdf002ssssphere.jpg" style="width: 100%;">
+                <div>Homogenous scattering volume with different scattering probabilities for different wavelengths of light. Pathtraced in WebGPU.</div>
             </div>
         </div>
+        <script>
+            const RIGHT = document.querySelector(".right-column");
+            const  IMGS = [];
+
+            RIGHT.childNodes.forEach((elem) => {
+                if (elem.classList && 
+                    elem.classList["value"] === "img") IMGS.push(elem);
+            })
+
+            IMGS.forEach(e => e.style["display"] = "none")
+
+            const STATE = {incr: 0, cur: null};
+            function next() {
+                if (STATE["cur"]) STATE["cur"].style["display"] = "none";
+                STATE["incr"] = ++STATE["incr"] % IMGS.length;
+
+                STATE["cur"] = IMGS[STATE["incr"]];
+                STATE["cur"].style["display"] = "";
+            }
+
+            next();
+            window.setInterval(next, 10000);
+        </script>
     </body>
 </html>

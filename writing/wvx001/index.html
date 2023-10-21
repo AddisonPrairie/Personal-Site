@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+        <style>
+            body {
+                margin: 0px;
+                font-family: "Overpass Mono", monospace;
+                font-size: 13.5px;
+            }
+
+            .center {
+                width: 80%;
+                max-width: 800px;
+                margin: 50px auto 100px auto;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .title {
+                text-align: center;
+                font-size: 20px;
+                margin: 10px 0px 10px 0px;
+            }
+            .links {
+                margin: 0px 10px 10px;
+            }
+            .img {
+                margin-top: 10px;
+                margin-bottom: 5px;
+            }
+            .img img {
+                
+            }
+            .img div {
+                font-size: 12px;
+                text-align: center;
+                margin-top: 5px;
+            }
+            .text {
+                hyphens: auto;
+                margin: 5px 0px;
+                width: 100%;
+            }
+            .code {
+                width: calc(100% - 10ch);
+                display: flex;
+                flex-direction: row;
+                margin: 10px 0px;
+            }
+            .code pre {
+                font-family: "Overpass Mono", monospace;
+                font-size: 13px;
+                width: calc(100% - 4ch);
+                margin: 0px;
+                line-height: 16.05px;
+            }
+            .code div {
+                text-align: right;
+                margin-right: 15px;
+                font-size: 10px;
+                line-height: 16.05px;
+                color: #3b3b3b;
+            }
+            .code-comment {
+                color: #888888;
+            }
+            table td {
+                font-family: "Overpass Mono", monospace;
+                font-size: 13.5px;
+                padding: 5px 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="center">
+            <div class="title">Web.vox</div>
+            <div class="links">
+                Addison Prairie / Aug 23
+            </div>
+            <div class="text">
+                NOTE: this is very short since the project is only partially complete. The code is still available <a href="https://github.com/AddisonPrairie/WebGPU-.vox">here</a> and a demo is available <a href="https://addisonprairie.github.io/WebGPU-.vox/">here</a>.
+            </div>
+            <div class="text">
+                After developing a simple voxel path tracer for <a href="/writing/vox002/">this project</a>, I created a small .vox file importer and viewer in JavaScript/WebGPU. It let users drag and drop .vox files from their computer and render them in real time. In the future, I'd like to return to this project and add support for more materials, volumes, etc.
+            </div>
+            <div class="img" style="width: 90%;">
+                <video style="width: 100%;" src="/media/wvx001/wvx001editorvideo.mp4" type="video/mp4" controls></video>
+                <div>Importing and interacting with a .vox model from <a href="https://github.com/ephtracy/voxel-model/tree/master">this repository</a>.</div>
+            </div>
+            <div class="links" style="margin-top: 10px;">
+                <a href="/">home</a>
+            </div>
+        </div>
+    </body>
+</html>
