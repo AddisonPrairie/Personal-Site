@@ -1,5 +1,6 @@
 <html>
     <head>
+        <title>Old Projects - Addison Prairie</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap" rel="stylesheet">
@@ -91,15 +92,16 @@
                 <video style="width: 100%;" src="/media/old001/old001_sdf001sun.mp4" type="video/mp4" controls></video>
                 <div>Editing time of day in interactive 3D fractal path tracer. Made with WebGPU. </div>
             </div>
-            <!--<div class="title">1. 3D Cellular Automata</div>
+            <div class="above-title-spacer"></div>
+            <div class="title">1. 3D Cellular Automata<a id="vca001"></a></div>
             <div class="links">
                 WebGL1 - Apr 2022
             </div>
             <div class="text">
-                This was my first graphics project. 
-            </div>-->
+                This was my first graphics project. Unfortunately, I do not have any screenshots or video recording of it, but a demo is available <a href="/demos/vca001/index.html">here</a>. It used JavaScript to run a 3D voxel cellular automata and WebGL to ray trace it in real time.
+            </div>
             <div class="above-title-spacer"></div>
-            <div class="title">2. Constraint-Based Procedural Generation</div>
+            <div class="title">2. Constraint-Based Procedural Generation<a id="wfc001"></a></div>
             <div class="links">WebGPU - Aug 2022</div>
             <div>This project used an algorithm similar to <a href="https://github.com/mxgmn/WaveFunctionCollapse">wave function collapse</a> to procedurally generate models from a simple tile set. Then, it path traced those models in real time using WebGPU. While there isn't anything too interesting here, one thing to note is the ray tracing acceleration structure used; since a scene consisting of tiles is naturally spatially partitioned, I didn't use a BVH as an acceleration structure. Instead, I stored a grid of "pointers" to tiles, and the ray tracing function marched through the grid, testing intersections against only those tiles it passed through on the grid.</div>
             <div class="text">The demo for this project can be found here. In the future, I'd like to revisit the topic of procedural generation.</div>
@@ -108,14 +110,54 @@
                 <div>Procedural generation algorithm running on 8x8x16 model. Path traced with WebGPU.</div>
             </div>
             <div class="above-title-spacer"></div>
-            <div class="title">3. SDF Path Tracing 1</div>
+            <div class="title">3. SDF Path Tracing 1<a id="sdf001"></a></div>
             <div class="links">WebGPU - Sep 2022</div>
-            <div class="text">This is by far one of my favorite projects. It is a small site for creating, editing, and path tracing 3D fractals using WebGPU. While the demo is available <a href="">here</a>, be warned that the code is very inefficient and slow. That said, it is still capable of generating very interesting images.</div>
+            <div class="text">This is by far one of my favorite projects. It is a small site for creating, editing, and path tracing 3D fractals using WebGPU. While the demo is available <a href="">here</a>, be warned that the code is very inefficient and slow. That said, it is still capable of generating very interesting images:
+            </div>
             <div class="img" style="width: 90%;">
                 <img src="/media/old001/old001_sdf001kleinian1.png" style="width: 100%">
                 <div>Path traced 3D fractal - "Kleinian Group Limit Set".</div>
             </div>
-            <!--<a href="/files/txt/old001_sdf001spudsville.txt">spudsville</a>-->
+            <div class="text">I have written a brief overview of how to interact with the demo <a href="/files/txt/old001_sdf001instructions.txt">here</a>. One of the core features of the demo is the editor which allows users to write their own fractal SDFs; in addition to the default fractal, here are some <a href="/files/txt/old001_sdf001spudsville.txt">additional</a> <a href="/files/txt/old001_sdf001pseudokleinianmenger.txt">examples</a>. The path tracing uses a Preetham Sun-Sky model to approximate the atmospheric scattering that gives sunsets their beautiful colors. The first video on this page, as well as the image below, show examples of the changing color of the sky as "time of day" changes.</div>
+            <div class="img" style="width: 90%;">
+                <img src="/media/old001/old001_sdf001sunsetbox.png" style="width: 100%">
+                <div>Path traced 3D fractal - "Mandelbox". Note the color come entirely from the sunset skylight: the underlying model is white.</div>
+            </div>
+            <div class="img" style="width: 90%;">
+                <img src="/media/old001/old001_sdf001spiral.png" style="width: 100%">
+                <div>Path traced 3D fractal - "IFS".</div>
+            </div>
+            <div class="above-title-spacer"></div>
+            <div class="title">4. WebGL Voxel Fractals<a id="vox001"></a></div>
+            <div class="links">WebGL2 - Dec 2022</div>
+            <div class="text">This was my first attempt at real time ray/path tracing. Initially, I did 1spp path tracing + temporal reprojection + spatial denoising. However, the denoising blur was too strong and did not look very good at sharp boundaries. Also, it ran pretty slowly.</div>
+            <div class="img" style="width: 90%;">
+                <img src="/media/old001/old001_vox001rtpt.png" style="width: 100%">
+                <div>256x256x256 voxel scene path traced and denoised in real time. Note the blurred shadows and little distinction between individual voxels.</div>
+            </div>
+            <div class="text">Eventually, I switched away from path tracing and instead just traced a shadow ray and a few, shorter ambient occlusion rays. The raw result looked something like this:</div>
+            <div class="img" style="width: 60%;">
+                <img src="/media/old001/old001_vox001noisy.png" style="width: 100%">
+                <div>Input to denoiser. 3 AO rays per pixel, 1 jittered shadow ray per pixel for soft shadows.</div>
+            </div>
+            <div class="text">Because the input was significantly less noisy than the raw path tracing input, the denoising kernel could be a lot lighter. Overall, this helped the performance a lot, but I still feel there was a lot more room for better performance.</div>
+            <div class="img" style="width: 90%;">
+                <img src="/media/old001/old001_vox001dragon.png" style="width: 100%">
+                <div>Ray traced ambient occlusion and soft shadows for voxel dragon model.</div>
+            </div>
+            <div class="text">The actual procedural generation algorithm is just a port of <a href="https://bitbucket.org/BWerness/voxel-automata-terrain/src/master/">this</a>. The fractal generation and acceleration structure building happens on the CPU. The demo is available <a href="">here</a>.</div>
+            <div class="img" style="width: 90%;">
+                <img src="/media/old001/old001_vox001fractal.png" style="width: 100%">
+                <div>Ray traced 3D voxel fractal.</div>
+            </div>
+            <div class="above-title-spacer"></div>
+            <div class="title">5. PBR<a id="pbr001"></a></div>
+            <div class="links">WebGL2 - Feb 2023</div>
+            <div class="text">This was the first path tracer I wrote based on the book Physically Based Rendering: From Theory to Implementation. I used Oren-Nayar diffuse BRDFs and Next Event Estimation/Multiple Importance Sampling to realistically render 3D fractals. Unfortunately I don't have a demo for this project, as it was mostly just a single file that I worked with while reading through parts of the book.</div>
+            <div class="img" style="width: 90%;">
+                <img src="/media/old001/old001_pbr001fractal.png" style="width: 100%">
+                <div>Path traced Mandelbulb with soft area light.</div>
+            </div>
         </div>
     </body>
 </html>

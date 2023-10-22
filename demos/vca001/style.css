@@ -1,0 +1,34 @@
+body {
+    margin: 0;
+}
+#targetCanvas {
+   display: block;
+   width: 100%;
+   height: 100%;
+   image-rendering: pixelated;
+   position: absolute;
+   z-index: 0;
+}
+.interface {
+    position: absolute;
+    z-index: -1;
+    width: 20%;
+    right: 0;
+    top: 0;
+    
+}
+
+button {
+    margin: 5px;
+    padding: 10px;
+    color: black;
+    background-color: whitesmoke;
+    border: 0px;
+    border-radius: 5px;
+    left: none;
+    right: none;
+}
+button:hover {
+    background-color: lightgrey;
+    color: black;
+}

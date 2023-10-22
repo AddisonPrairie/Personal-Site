@@ -1,0 +1,56 @@
+NOTE: this site requires WebGPU.
+
+BASIC CONTROLS:
+
+To change the direction you are facing, left click and drag your mouse. To stop rotating, left click again.
+
+To move, use the following controls:
+
+(W) - move forward
+(A) - move left 
+(S) - move backward
+(D) - move right
+
+BASIC SETTINGS:
+
+[Path Trace]: to decrease lag while moving around, you can change disable path tracing by unchecking this box
+
+[Time of Day]: slide to change between morning/sunrise (0) and evening/sunset (1). Will change the position of the sun in the sky and also affect atmospheric scattering.
+
+[Sun Location]: rotates the sun about the z (up) axis.
+
+[Light Bounces]: controls the greatest number of times light can bounce in a given path. Increasing this value will slow down the renderer. A value of 2 will give direct light only; anything greater will create "global illumination" effect.
+
+[Floor]: enable a floor at z = 0.
+
+[Download image]: will save the current viewport as an image.
+
+[Pause/Continue Rendering]: will pause path tracing loop. Click again to restart.
+
+ADVANCED SETTINGS:
+
+Camera/[Zoom]: change the zoom of the camera.
+
+Camera/[Select Focus Point]: when Camera/[Depth of Field] is greater than 0, a depth of field affect will be applied to the render. Change which part of the image is in focus by clicking on this button, then clicking again once your mouse is hovered over the part of the image you want to focus on.
+
+Camera/[Depth of Field]: affects the strength of the depth of feild effect; set to zero to disable.
+
+Ray Marching/[Detail/Epsilon]: changes the level of detail of the fractal. Smaller values = higher detail = slower render.
+
+Ray marching/[Iterations]: the number of steps the ray marching function takes before giving up. Highly detailed scenes may require this value to be larger.
+
+Ray marching/[breakout]: the distance a ray travels before giving up. For scenes with objects far apart from one another, this value may need to be set higher.
+
+Code/[Open/Close Code]: this is the portion of the editor which allows you to write your own distance estimators. Your shader must define two functions, "fn DE(z : vec3f) -> f32" and "fn getColor(z : vec3f) -> vec3f". Additionally, it allows you to add any uniforms you may want to change the structure of your fractal; the format required is specified in the default distance estimator, and in the example files on my site (addisonprairie.com).
+
+Code/[Compile Code]: when you want to test the code you have written, click this button to send the updates to the renderer.
+
+Movement Controls/[Movement Speed]: edit the speed you move when using W/A/S/D.
+
+Movement Controls/[Mouse Sensitivity]: edit the sensitivity of the mouse when panning camera.
+
+Camera Positioning Information: these values serve as a reference to remember your current position. They are read only.
+
+FRACTAL STRUCTURE:
+
+this portion of the controls will depend on what distance estimator you have loaded and what uniforms that distance estimator exposes.
