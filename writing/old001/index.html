@@ -104,7 +104,7 @@
             <div class="title">2. Constraint-Based Procedural Generation<a id="wfc001"></a></div>
             <div class="links">WebGPU - Aug 2022</div>
             <div>This project used an algorithm similar to <a href="https://github.com/mxgmn/WaveFunctionCollapse">wave function collapse</a> to procedurally generate models from a simple tile set. Then, it path traced those models in real time using WebGPU. While there isn't anything too interesting here, one thing to note is the ray tracing acceleration structure used; since a scene consisting of tiles is naturally spatially partitioned, I didn't use a BVH as an acceleration structure. Instead, I stored a grid of "pointers" to tiles, and the ray tracing function marched through the grid, testing intersections against only those tiles it passed through on the grid.</div>
-            <div class="text">The demo for this project can be found here. In the future, I'd like to revisit the topic of procedural generation.</div>
+            <div class="text">The demo for this project can be found <a href="/demos/wfc001/">here</a>. In the future, I'd like to revisit the topic of procedural generation.</div>
             <div class="img" style="width: 90%;">
                 <video style="width: 100%;" src="/media/old001/old001_wfc001running.mp4" type="video/mp4" controls></video>
                 <div>Procedural generation algorithm running on 8x8x16 model. Path traced with WebGPU.</div>
@@ -112,7 +112,7 @@
             <div class="above-title-spacer"></div>
             <div class="title">3. SDF Path Tracing 1<a id="sdf001"></a></div>
             <div class="links">WebGPU - Sep 2022</div>
-            <div class="text">This is by far one of my favorite projects. It is a small site for creating, editing, and path tracing 3D fractals using WebGPU. While the demo is available <a href="">here</a>, be warned that the code is very inefficient and slow. That said, it is still capable of generating very interesting images:
+            <div class="text">This is by far one of my favorite projects. It is a small site for creating, editing, and path tracing 3D fractals using WebGPU. While the demo is available <a href="/demos/sdf001/">here</a>, be warned that the code is very inefficient and slow. That said, it is still capable of generating very interesting images:
             </div>
             <div class="img" style="width: 90%;">
                 <img src="/media/old001/old001_sdf001kleinian1.png" style="width: 100%">
@@ -145,7 +145,7 @@
                 <img src="/media/old001/old001_vox001dragon.png" style="width: 100%">
                 <div>Ray traced ambient occlusion and soft shadows for voxel dragon model.</div>
             </div>
-            <div class="text">The actual procedural generation algorithm is just a port of <a href="https://bitbucket.org/BWerness/voxel-automata-terrain/src/master/">this</a>. The fractal generation and acceleration structure building happens on the CPU. The demo is available <a href="">here</a>.</div>
+            <div class="text">The actual procedural generation algorithm is just a port of <a href="https://bitbucket.org/BWerness/voxel-automata-terrain/src/master/">this</a>. The fractal generation and acceleration structure building happens on the CPU. The demo is available <a href="/demos/vox001/">here</a>.</div>
             <div class="img" style="width: 90%;">
                 <img src="/media/old001/old001_vox001fractal.png" style="width: 100%">
                 <div>Ray traced 3D voxel fractal.</div>
