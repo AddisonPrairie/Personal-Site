@@ -103,27 +103,27 @@
                 <div class="title">Demos</div>
                 <table>
                     <tr>
-                        <td>SDF path tracing 2</td>
+                        <td><a href="demos/sdf002/relic/">SDF path tracing 2</a></td>
                         <td>(WebGPU)</td>
                     </tr>
                     <tr>
-                        <td>Web.vox</td>
+                        <td><a href="https://addisonprairie.github.io/WebGPU-.vox/">Web.vox</a></td>
                         <td>(WebGPU)</td>
                     </tr>
                     <tr>
-                        <td>WebGPU Voxel Fractals</td>
+                        <td><a href="https://addisonprairie.github.io/WebGPU-Voxel-Fractals/?size=64">WebGPU Voxel Fractals</a></td>
                         <td>(WebGPU)</td>
                     </tr>
                     <tr>
-                        <td>WebGPU "Wavefront" Path Tracing</td>
+                        <td><a href="demos/wpt002/">WebGPU "Wavefront" Path Tracing</a></td>
                         <td>(WebGPU)</td>
                     </tr>
                     <tr>
-                        <td>WebGL Voxel Fractals</td>
+                        <td><a href="demos/vox001/">WebGL Voxel Fractals</a></td>
                         <td>(WebGL2)</td>
                     </tr>
                     <tr>
-                        <td>SDF path tracing 1</td>
+                        <td><a href="demos/sdf001/">SDF path tracing 1</a></td>
                         <td>(WebGPU)</td>
                     </tr>
                     <tr>
@@ -131,7 +131,7 @@
                         <td>(WebGPU)</td>
                     </tr>
                     <tr>
-                        <td>3D Cellular Automata</td>
+                        <td><a href="demos/vca001/">3D Cellular Automata</a></td>
                         <td>(WebGL1)</td>
                     </tr>
                 </table>
@@ -176,7 +176,7 @@
 
             IMGS.forEach(e => e.style["display"] = "none")
 
-            const STATE = {incr: 0, cur: null};
+            const STATE = {incr: -1, cur: null};
             function next() {
                 if (STATE["cur"]) STATE["cur"].style["display"] = "none";
                 STATE["incr"] = ++STATE["incr"] % IMGS.length;
@@ -186,7 +186,7 @@
             }
 
             next();
-            window.setInterval(next, 10000);
+            //window.setInterval(next, 10000);
         </script>
     </body>
 </html>
