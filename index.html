@@ -1,196 +1,357 @@
 <html>
     <head>
-        <title>Home - Addison Prairie</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Overpass+Mono&display=swap" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Overpass&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Schibsted+Grotesk:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
         <style>
             body {
-                margin: 0px;
-                padding: 0px;
-                font-family: "Overpass Mono", monospace;
-                font-size: 12.5px;
+                font-family: "Schibsted Grotesk";
+                font-size: 14.66px;
+                line-height: 23.2px;
                 display: flex;
+                width: 100%;
+                height: 100%;
+                margin: 0px;
+
             }
-            .column {
-                width: 100%; height: 100%;
+
+            html {
+                scroll-behavior: smooth;
             }
-            .left-column {
+
+            a {
+                color: black;
+                text-underline-offset: 4px;
+            }
+
+            #center {
+                width: 870px;
+
                 display: flex;
                 flex-direction: column;
+
                 align-items: center;
+
+                padding: 100px 0px;
+
+                position: relative;
+
+                height: fit-content;
             }
-            .right-column {
+
+            #center > .block {
+                width: 100%;
                 display: flex;
-                align-items: center;
-                justify-content: center;
-                height: 100vh;
             }
-            .title {
-                text-align: center;
-                font-size: 20px;
-                margin: 10px 0px;
+
+            #center > .block > .left {
+                width: 400px;
+                margin: 0px;
+                display: flex;
+                flex-direction: column;
+                align-items: end;
             }
-            .text {
-                width: 90%;
-                max-width: 400px;
+
+            #center > .block > .right {
+                width: 450px;
+                padding-left: 10px;
+                margin-left: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: start;
             }
-            .table div {
-                text-align: center;
+
+            .image-container > img {
+                width: 100%;
             }
-            table, tr {
-                font-size: inherit;
+
+            .image-container > video {
+                width: 100%;
             }
-            td {
-                font-size: inherit;
-                padding: 1px 10px;
+
+            .image-container > .caption {
+                font-size: 12px;
+                color: #606060;
+                width: 100%;
+                line-height: normal;
+                margin-top: 5px;
+                hyphens: auto;
+            }
+
+            .image-container > .caption > a {
+                font-size: 12px;
+                color: #606060;
+                width: 100%;
+                line-height: normal;
+                margin-top: 5px;
+                hyphens: auto;
+                text-underline-offset: 1px;
+            }
+
+            .edged-text {
+                border-left: 1.5px solid #808080; padding-left: 10px;
+            }
+
+            .edged-text + .edged-text {
+                margin-top: 20px;
+            }
+
+            .project-spacer {
+                width: 400px; 
+                margin: 40px 0px 40px 410px; 
+                border-bottom: 0px solid #606060;
+            }
+
+            .anchor {
+                position: absolute;
+                transform: translateY(-25vh);
             }
         </style>
     </head>
     <body>
-        <div class="left-column column">
-            <div style="height: 25px;"></div>
-            <div class="title">Addison Prairie</div>
-            <div style="height: 25px;"></div>
-            <div class="text">
-                I am a student studying math and computer science at Stanford University. I am originally from Austin, Texas. My primary interests are pure math, CS theory, and computer graphics.
+        <div style="flex-grow: 1"></div>
+        <div id="center">
+            <div>
+                <div style="font-size: 30px;">About.</div>
+                <div style="color: #606060; margin: 10px 0px;"><a href="https://github.com/AddisonPrairie" style="color: #606060;">Github</a> &nbsp;/&nbsp; <a href="https://x.com/AddisonPrairie" style="color: #606060;">Twitter</a> &nbsp;/&nbsp; <a href="https://www.youtube.com/@addisonprairie5315" style="color: #606060;">YouTube</a> &nbsp;/&nbsp; <a href="mailto:addison.prairie@gmail.com" style="color: #606060;">Email</a></div>
+                <div class="edged-text">I am a student at Stanford University, studying computer science (with a focus on graphics & theory) and math. This site is meant to host some of the graphics projects I've been working on in my free time.
+                </div>
             </div>
-            <div style="height: 25px;"></div>
-            <div class="table">
-                <div class="title">Writing</div>
-                <table>
-                    <tr>
-                        <td><a href="/writing/sdf002/">SDF Path Tracing 2</a></td>
-                        <td>Aug 2023</td>
-                    </tr>
-                    <tr>
-                        <td><a href="/writing/wvx001/">Web.vox</a></td>
-                        <td>Aug 2023</td>
-                    </tr>
-                    <tr>
-                        <td><a href="/writing/vox002/">WebGPU Voxel Fractals</a></td>
-                        <td>Jul 2023</td>
-                    </tr>
-                    <tr>
-                        <td><a href="/writing/wpt001/">WebGPU "Wavefront" Path Tracing</a></td>
-                        <td>Jun 2023</td>
-                    </tr>
-                    <tr>
-                        <td><a href="/writing/old001/#pbr001">PBR 1</a></td>
-                        <td>Feb 2023</td>
-                    </tr>
-                    <tr>
-                        <td><a href="/writing/old001/#vox001">WebGL Voxel Fractals</a></td>
-                        <td>Dec 2022</td>
-                    </tr>
-                    <tr>
-                        <td><a href="/writing/old001/#sdf001">SDF Path Tracing 1</a></td>
-                        <td>Sep 2022</td>
-                    </tr>
-                    <tr>
-                        <td><a href="/writing/old001/#wfc001">Contraint-based Procedural Generation</a></td>
-                        <td>Aug 2022</td>
-                    </tr>
-                    <tr>
-                        <td><a href="/writing/old001/#vca001">3D Cellular Automata</a></td>
-                        <td>Apr 2022</td>
-                    </tr>
-                </table>
+            <div class="block" style="margin: 40px 0px;">
+                <div class="left">
+                    <div style="font-size: 30px; margin-bottom: 15px; width: 100%;">Projects.</div>
+                    <div class="edged-text" style="width: calc(100% - 10px)">
+                        <div>
+                            <div>
+                                <a href="#gpu-lbvh-anchor">GPU Accelerated BVH Construction</a>
+                            </div>
+                            <div>
+                                <a href="#tree-gen-anchor">Tree Generator</a>
+                            </div>
+                            <div>
+                                <a href="#sdf-pt-2-anchor">SDF Path Tracing 2</a>
+                            </div>
+                            <div>
+                                <a href="#web-vox-anchor">Web.vox</a>
+                            </div>
+                            <div>
+                                <a href="#pt-vox-anchor">Path Tracing Voxel Fractals</a>
+                            </div>
+                            <div>
+                                <a href="#wavefront-anchor">Wavefront Path Tracing</a>
+                            </div>
+                            <div>
+                                <a href="#sdf-pt-1-anchor">SDF Path Tracing 1</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div style="font-size: 30px; margin-bottom: 15px; width: 100%;">&nbsp;</div>
+                    <div class="edged-text">
+                        Most of these projects are made with some mix of JavaScript, WebAssembly (C/C++), WebGPU, and WebGL. Many of them are available as interactive demos in some shape or form, and most are also hosted on my Github. Here's a list of my projects, with more information about each below.
+                    </div>
+                </div>
             </div>
-            <div style="height: 50px;"></div>
-            <div class="table">
-                <div class="title">Demos</div>
-                <table>
-                    <tr>
-                        <td><a href="https://addisonprairie.github.io/Tree-Generator/">Tree Generator</a></td>
-                        <td>(WebGL2)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="demos/sdf002/relic/">SDF path tracing 2</a></td>
-                        <td>(WebGPU)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="https://addisonprairie.github.io/WebGPU-.vox/">Web.vox</a></td>
-                        <td>(WebGPU)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="https://addisonprairie.github.io/WebGPU-Voxel-Fractals/?size=64">WebGPU Voxel Fractals</a></td>
-                        <td>(WebGPU)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="demos/wpt001/">WebGPU "Wavefront" Path Tracing</a></td>
-                        <td>(WebGPU)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="demos/vox001/">WebGL Voxel Fractals</a></td>
-                        <td>(WebGL2)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="demos/sdf001/">SDF path tracing 1</a></td>
-                        <td>(WebGPU)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="demos/wfc001/">Contraint-based Procedural Generation</a></td>
-                        <td>(WebGPU)</td>
-                    </tr>
-                    <tr>
-                        <td><a href="demos/vca001/">3D Cellular Automata</a></td>
-                        <td>(WebGL1)</td>
-                    </tr>
-                </table>
+            <div class="block">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <img src="media/happy_buddha_lbvh.png">
+                        <div class="caption">
+                            A 1M triangle model, courtesy of <a href="https://graphics.stanford.edu/data/3Dscanrep/">the Stanford 3D Scanning Repository</a>.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div style="font-size: 30px;" >GPU BVH Construction.</div>
+                    <span class="anchor" id="gpu-lbvh-anchor"></span>
+                    <div style="color: #606060; margin: 10px 0px;">Aug. 2024 &nbsp;-&nbsp; WebGPU/JavaScript &nbsp;-&nbsp; <a href="https://addisonprairie.github.io/WebGPU-LVBH-demo/">demo</a> &nbsp;-&nbsp; <a href="https://github.com/AddisonPrairie/WebGPU-LVBH-demo?tab=readme-ov-file">code</a></div>
+                    <div class="edged-text">
+                        Having learned a lot about how to design more efficient, parallel algorithms over the previous year, I wanted to revisit my previous attempt at wave front path tracing in WebGPU. In an effort to make the entire pipeline run as quickly as possible, I switched to constructing the BVH on the GPU. My implemen&shy;tation is based on <a href="https://research.nvidia.com/sites/default/files/pubs/2012-06_Maximizing-Parallelism-in/karras2012hpg_paper.pdf">this paper</a>.
+                    </div>
+                    <div class="edged-text">
+                        Overall, the performance increase with this method was huge. Whereas my WASM/C++ BVH construction could take 10 seconds to process a mesh with a few hundred thousand triangles, the GPU version running on my laptop handles the 1M triangle model on the left in a third of a second. In fact, it is able to construct the BVH five times faster than it can parse the .obj file.
+                    </div>
+                    <div class="edged-text">
+                        I also found while developing this project that having as much of the pipeline as possible on the GPU kept the code more modular and organized; as I've added more features to this project, I've continued to do as much processing as possible on the GPU.
+                    </div>
+                </div>
             </div>
-            <div style="height: 50px;"></div>
-            <div class="table">
-                <div class="title">Links</div>
-                <div><a href="https://twitter.com/AddisonPrairie">Twitter/AddisonPrairie</a></div>
-                <div><a href="https://www.youtube.com/channel/UCEGItQR2innAFiH3PYbg4Fw">Youtube/AddisonPrairie5315</a></div>
-                <div><a href="https://github.com/AddisonPrairie">GitHub/AddisonPrairie</a></div>
+            <div class="project-spacer"></div>
+            <div class="block">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <video autoplay loop><source src="media/tree_grow.mp4" type="video/mp4"></video>
+                        <div class="caption">
+                            A tree growing in real time.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div style="font-size: 30px;" >Tree Generator.</div>
+                    <span class="anchor" id="tree-gen-anchor"></span>
+                    <div style="color: #606060; margin: 10px 0px;">Jan. 2024 &nbsp;-&nbsp; WebGL2/JavaScript &nbsp;-&nbsp; <a href="https://addisonprairie.github.io/Tree-Generator/">demo</a> &nbsp;-&nbsp; <a href="https://github.com/AddisonPrairie/Tree-Generator?tab=readme-ov-file">code</a></div>
+                    <div class="edged-text">
+                        For this project, I wanted to branch out and work on a topic I hadn't touched in a while: procedural generation. After making a <a href="https://x.com/AddisonPrairie/status/1730856001245684185">procedural tree in Blender</a> for one of my classes, I stumbled on the <a href="https://algorithmicbotany.org/#:~:text=Welcome%20to%20Algorithmic%20Botany%2C%20the,simulation%2C%20and%20visualization%20of%20plants.">Algorithmic Botany</a> group at the University of Calgary and read through <a href="https://algorithmicbotany.org/papers/colonization.egwnp2007.html">many</a> <a href="https://algorithmicbotany.org/papers/enviro.sig96.html">of</a> <a href="https://algorithmicbotany.org/papers/selforg.sig2009.html">their papers</a> on procedurally generating plants. Putting these ideas together, I built a procedural tree generator using WASM/C++ and WebGL2.
+                    </div>
+                    <div class="edged-text">
+                        <a href="https://addisonprairie.github.io/Tree-Generator/">The demo</a> allows users to modify different properties of the tree as it grows in real time: you can change how strongly it is affected by gravity, how energy is divided between different branches, how strongly the tree grows towards light, and many other properties. The demo gives a rough explanation of the different parameters exposed by the simulation.
+                    </div>
+                    <div class="edged-text">
+                        While writing the majority of the procedural generation code in C++ improved the performance significantly, I still feel it runs too slowly. The largest bottle neck is computing the amount of light each leaf receives, since it must factor in how much light is blocked by each other branch and leaf; luckily, this is the most parrellelizable part of the simulation, and I hope to move this work onto the GPU in the future.
+                    </div>
+                </div>
+            </div>
+            <div class="project-spacer"></div>
+            <div class="block" style="margin-bottom: 20px">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <img src="media/fractal_0_cropped.jpg">
+                        <div class="caption">
+                            A 3D fractal path traced with a glass material.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div style="font-size: 30px;" >SDF Path Tracing #2.</div>
+                    <span class="anchor" id="sdf-pt-2-anchor"></span>
+                    <div style="color: #606060; margin: 10px 0px;">Sep. 2023 &nbsp;-&nbsp; WebGPU/JavaScript &nbsp;-&nbsp; demos: <a href="/demos/sdf002/relic/index.html">[A]</a>, <a href="/demos/sdf002/mecanique/">[B]</a>, <a href="/demos/sdf002/pillar/">[C]</a></div>
+                    <div class="edged-text">
+                        This was a small project I did in the few weeks before my first year of college. I wanted to practice some physically based rend&shy;er&shy;ing techniques I hadn't used before, including microfacet-bas&shy;ed BRDF models, volumetric path tracing, and more interesting light sources. To be able to focus on these elements, I decided to use signed distance functions (SDFs) to model the geometry in the scene, allowing me to experiment quickly with complex geometry.
+                    </div>
+                    <div class="edged-text">
+                        While this project has no real user interaction, I still decided to do this project with JavaScript and WebGPU. If you have a WebGPU enabled browser and would like to see them rendered live, check out one of these demos: <a href="/demos/sdf002/relic/index.html">[A]</a>, <a href="/demos/sdf002/mecanique/">[B]</a>, <a href="/demos/sdf002/pillar/">[C]</a>.
+                    </div>
+                    <div class="edged-text">
+                        My Microfacet BRDF was based on the these papers: <a href="https://jcgt.org/published/0007/04/01/paper.pdf">[1]</a> <a href="https://inria.hal.science/hal-00996995v1/document">[2]</a>. You can see it in action in the image on the left: the floor and background wall have a rough specular material, which gives them a metallic appearance.
+                    </div>
+                </div>
+            </div>
+            <div class="block">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <img src="media/ssssphere_0.jpg">
+                        <div class="caption">
+                           A sphere containing a homogenous scattering medium.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="edged-text">
+                        For me, the most interesting part of this project was the volumetric path tracing. My implementation was based on the simple vol&shy;ume integrator from <a href="https://pbr-book.org/3ed-2018/Volume_Scattering">PBRT</a>, which allows volumes to scatter different wavelengths of light with different probabilities. While. in the image on the left, the volume itself has no "color," the scattering properties of the volume create an interesting effect. Red wavelengths of light are more likely to scatter than their blue/green counterparts; as a result, red wavelengths can't travel far, making points away from the light appear blue.
+                    </div>
+                    <div class="edged-text">
+                        While a typical simple GPU-accelerated path tracer will perform one sample per kernel invocation, this strategy becomes impractical when rendering scattering media. In a typical scene with a handful of objects and lights, a path of light might scatter 3-5 times before reaching a light source; however, even in simple scenes like that on the left, a path of light might scatter 30-60 times before reaching a light source, which is an impractical number of rays to trace per kernel invocation. To circumvent this while keeping the overall code simple, my renderer is a mix between this simple strategy and a full-blown wavefront path tracer. Instead of each kernel invocation computing one sample per pixel, an invocation extends each active path by one step. This allows a path to be computed over multiple invocations, allowing it to scatter more and improving GPU occupancy.
+                    </div>
+                </div>
+            </div>
+            <div class="project-spacer"></div>
+            <div class="block">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <img src="media/webvox0.png">
+                        <div class="caption">
+                            A simple voxel model rendered in browser, from <a href="https://github.com/ephtracy/voxel-model/tree/master">this repository</a>.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div style="font-size: 30px;">Web.vox.</div>
+                    <span class="anchor" id="web-vox-anchor"></span>
+                    <div style="color: #606060; margin: 10px 0px;">Aug. 2023 &nbsp;-&nbsp; WebGPU/JavaScript &nbsp;-&nbsp; <a href="https://addisonprairie.github.io/WebGPU-.vox/">demo</a> &nbsp;-&nbsp; <a href="https://github.com/AddisonPrairie/WebGPU-.vox">code</a></div>
+                    <div class="edged-text">
+                        This was my second project using the voxel path tracer I initially developed for rendering procedural voxel fractals. It allows users to drag and drop <a href="https://github.com/ephtracy/voxel-model">.vox models</a> - the storage format used by <a href="https://ephtracy.github.io/">MagicaVoxel</a> - into their browser and view them with a simple path tracer. It has limited support for different .vox features, and may not work with files which contain animations, volumes, or models which are too large.
+                    </div>
+                </div>
+            </div>
+            <div class="project-spacer"></div>
+            <div class="block" style="margin-bottom: 20px;">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <img src="media/vox002copper.png">
+                        <div class="caption">
+                            A massive voxel fractal path traced in a handful of seconds.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div style="font-size: 30px;">Path Tracing Voxel Fractals.</div>
+                    <span class="anchor" id="pt-vox-anchor"></span>
+                    <div style="color: #606060; margin: 10px 0px;">Jul. 2023 &nbsp;-&nbsp; WebGPU/JavaScript &nbsp;-&nbsp; <a href="https://addisonprairie.github.io/WebGPU-Voxel-Fractals/?size=128">demo</a> &nbsp;-&nbsp; <a href="https://github.com/AddisonPrairie/WebGPU-Voxel-Fractals">code</a></div>
+                    <div class="edged-text">
+                        This project started as an attempt to path trace large voxel scenes in real time using a mix of upscaling, temporal reuse of samples, and SVGF. While the <a href="https://x.com/AddisonPrairie/status/1684270797588770817">initial results</a> were promising, I never got the performance to a level which was acceptable for the low end devices I was targetting.
+                    </div>
+                    <div class="edged-text">
+                        As a result, I switched away from real time rendering towards making just an interactive progressive path tracer. To accelerate rendering, I stored coarse representations of the scene at different levels, allowing me to render large scenes with excellent performance. The scene on the left is made up of more than 3B individual cubes, and was rendered within a matter of seconds on my laptop. Additionally, the acceleration structure is built on the GPU.
+                    </div>
+                </div>
+            </div>
+            <div class="block">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <img src="media/vox_frac_0.jpg">
+                        <div class="caption">
+                            Another large voxel fractal.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="edged-text">
+                        The scenes are generated using Brent Werness' <a href="https://bitbucket.org/BWerness/voxel-automata-terrain/src/master/">Voxel Automata Terrain</a> ported to javascript. As this generation is done on the CPU, it may take a bit (up to 30s) for larger (i.e., 512³) scenes, but the rest of the pipeline runs extremely quickly on the GPU.
+                    </div>
+                    <div class="edged-text">
+                        The demo allows you to move around a scene, modify aspects of the lighting such as the sun's position and intensity, and edit camera variables such as the aperture, focal distance, and tone mapping. It also gives more explanation of how various parameters effect the procedural generation.
+                    </div>
+                </div>
+            </div>
+            <div class="project-spacer"></div>
+            <div class="block">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <img src="media/hannibalclay.png">
+                        <div class="caption">
+                            Path traced scan of statue of <a href="https://en.wikipedia.org/wiki/S%C3%A9bastien_Slodtz">Hannibal</a>. Model courtesy <a href="https://www.myminifactory.com/scantheworld/">Scan the World</a>.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div style="font-size: 30px;">Wavefront Path Tracing.</div>
+                    <span class="anchor" id="wavefront-anchor"></span>
+                    <div style="color: #606060; margin: 10px 0px;">Jun. 2023 &nbsp;-&nbsp; WebGPU/JavaScript &nbsp;-&nbsp; <a href="/demos/wpt001/index.html">demo</a> &nbsp;-&nbsp; <a href="https://github.com/AddisonPrairie/WebGPU-Path-Tracing">code</a></div>
+                    <div class="edged-text">
+                        This was my first attempt at building a more complex path tracer on the GPU, and my first experience with ray tracing BVHs. With WebGPU becoming more widely supported, I wanted to try making a GPU-oriented path tracer based on the paper <a href="https://research.nvidia.com/publication/2013-07_megakernels-considered-harmful-wavefront-path-tracing-gpus">Mega&shy;kernels Considered Harmful: Wavefront Path Tracing on GPUs</a>. Although I achieved decent performance, there were a few aspects of GPU programming I didn't understand at the time, so it definitely falls short of the performance it could have achieved.
+                    </div>
+                    <div class="edged-text">
+                        Nonetheless, I really enjoyed working on this project. The demo allows users to upload 3D models, place them around a scene, apply different materials to them, upload HDRIs to change the environment lighting, and adjust the camera focal distance and aperture. To improve performance, the BVH is constructed in WASM (written in C++), while the remainder of the rendering pipeline runs on the GPU.
+                    </div>
+                </div>
+            </div>
+            <div class="project-spacer"></div>
+            <div class="block">
+                <div class="left">
+                    <div class="image-container" style="width: 400px;">
+                        <img src="media/sdf_0_0.jpg">
+                        <div class="caption">
+                            A 3D fractal path traced in WebGPU.
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div style="font-size: 30px;">SDF Path Tracing #1.</div>
+                    <span class="anchor" id="sdf-pt-1-anchor"></span>
+                    <div style="color: #606060; margin: 10px 0px;">Nov. 2022 &nbsp;-&nbsp; WebGPU/JavaScript &nbsp;-&nbsp; <a href="demos/sdf001/index.html">demo</a></div>
+                    <div class="edged-text">
+                        This was my first large graphics project, completed in my senior year of highschool. Inspired by <a href="http://blog.hvidtfeldts.net/index.php/2015/01/path-tracing-3d-fractals/">this article</a>, I used WebGPU to create an editor for exploring, manipulating, and path tracing 3D fractals defined by signed distance functions (SDFs). It allows users to input their own SDFs in the form of a WGSL snippet, adjust parameters of their SDFs in real time, and modify aspects of the lighting like the sun position and time of day. To simulate the sun and atmospheric scattering, I implemented the Preetham Sky model in WebGPU as well.
+                    </div>
+                </div>
+            </div>
+            <div class="block">
+                <div style="height: 100px; width: 100%; text-align: center; color: #606060;"></div>
             </div>
         </div>
-        </div>
-        <style>
-            .img div {
-                margin-top: 5px;
-                text-align: center;
-            }
-        </style>
-        <div class="right-column column"  style="display: none;">
-            <div class="img" style="width: 90%; max-width: 600px;">
-                <img src="media/wpt001/wpt001hannibalclay.png" style="width: 100%;">
-                <div>Pathtraced scan of a Hannibal sculpture by Sebastian Slodtz. Model courtesy <a href="">scan the world</a>.</div>
-            </div>
-            <div class="img" style="width: 90%; max-width: 600px;">
-                <img src="media/sdf002/SDF002relicplain.png" style="width: 100%;">
-                <div>Pathtraced fractal with procedural solid texturing.</div>
-            </div>
-            <div class="img" style="width: 90%; max-width: 600px">
-                <img src="/media/sdf002/sdf002ssssphere.jpg" style="width: 100%;">
-                <div>Homogenous scattering volume with different scattering probabilities for different wavelengths of light. Pathtraced in WebGPU.</div>
-            </div>
-        </div>
-        <script>
-            const RIGHT = document.querySelector(".right-column");
-            const  IMGS = [];
-
-            RIGHT.childNodes.forEach((elem) => {
-                if (elem.classList && 
-                    elem.classList["value"] === "img") IMGS.push(elem);
-            })
-
-            IMGS.forEach(e => e.style["display"] = "none")
-
-            const STATE = {incr: -1, cur: null};
-            function next() {
-                if (STATE["cur"]) STATE["cur"].style["display"] = "none";
-                STATE["incr"] = ++STATE["incr"] % IMGS.length;
-
-                STATE["cur"] = IMGS[STATE["incr"]];
-                STATE["cur"].style["display"] = "";
-            }
-
-            next();
-            //window.setInterval(next, 10000);
-        </script>
+        <div style="flex-grow: 2"></div>
     </body>
 </html>
